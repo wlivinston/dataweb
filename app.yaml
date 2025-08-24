@@ -5,7 +5,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install && npm run build
+    build_command: npm install --include=dev && npm run build
     run_command: npm run preview
     environment_slug: node-js
     instance_count: 1
@@ -23,11 +23,6 @@ services:
       - path: /
     health_check:
       http_path: /
-      initial_delay_seconds: 10
-      interval_seconds: 10
-      timeout_seconds: 5
-      success_threshold: 1
-      failure_threshold: 3
 
   - name: backend
     source_dir: backend
@@ -58,11 +53,6 @@ services:
       - path: /api
     health_check:
       http_path: /api/health
-      initial_delay_seconds: 10
-      interval_seconds: 10
-      timeout_seconds: 5
-      success_threshold: 1
-      failure_threshold: 3
 
   - name: ml-hub
     source_dir: streamlit_apps
@@ -86,11 +76,6 @@ services:
       - path: /ml
     health_check:
       http_path: /ml
-      initial_delay_seconds: 15
-      interval_seconds: 10
-      timeout_seconds: 5
-      success_threshold: 1
-      failure_threshold: 3
 
 databases:
   - name: dataweb-db
@@ -114,13 +99,3 @@ alerts:
     disabled: false
   - rule: DOMAIN_FAILED
     disabled: false
-  - rule: HIGH_CPU
-    disabled: false
-    operator: GREATER_THAN
-    value: 80
-    window: 5m
-  - rule: HIGH_MEMORY
-    disabled: false
-    operator: GREATER_THAN
-    value: 80
-    window: 5m
