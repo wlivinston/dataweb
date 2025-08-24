@@ -4,7 +4,7 @@ services:
     source_dir: /
     github:
       repo: wlivinston/dataweb
-      branch: main
+      branch: master
     build_command: npm install && npm run build
     run_command: npm run preview
     environment_slug: node-js
@@ -33,7 +33,7 @@ services:
     source_dir: backend
     github:
       repo: wlivinston/dataweb
-      branch: main
+      branch: master
     build_command: npm install
     run_command: npm start
     environment_slug: node-js
@@ -68,7 +68,7 @@ services:
     source_dir: streamlit_apps
     github:
       repo: wlivinston/dataweb
-      branch: main
+      branch: master
     build_command: pip install -r requirements.txt
     run_command: streamlit run main.py --server.port $PORT --server.address 0.0.0.0
     environment_slug: python
