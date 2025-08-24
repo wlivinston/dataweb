@@ -5,8 +5,8 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install && ./node_modules/.bin/vite build
-    run_command: npm run preview
+    build_command: echo "Using pre-built files"
+    run_command: npx serve -s dist -l $PORT
     environment_slug: node-js
     instance_count: 1
     instance_size_slug: basic-xxs
