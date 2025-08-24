@@ -1,9 +1,9 @@
-name: dataweb-platform
+name: dataafrik-platform
 services:
   - name: frontend
     source_dir: /
     github:
-      repo: your-github-username/your-repo-name
+      repo: your-github-username/dataweb
       branch: main
     build_command: npm install && npm run build
     run_command: npm run preview
@@ -32,7 +32,7 @@ services:
   - name: backend
     source_dir: backend
     github:
-      repo: your-github-username/your-repo-name
+      repo: your-github-username/dataweb
       branch: main
     build_command: npm install
     run_command: npm start
@@ -45,7 +45,7 @@ services:
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
       - key: SUPABASE_SERVICE_ROLE_KEY
-        value: sbp_ad0bd1a56fcea427de1d5c8c2ab5440741693348
+        value: your_supabase_service_role_key_here
         type: SECRET
       - key: SUPABASE_ANON_KEY
         value: your_dataweb_anon_key_here
@@ -67,7 +67,7 @@ services:
   - name: ml-hub
     source_dir: streamlit_apps
     github:
-      repo: your-github-username/your-repo-name
+      repo: your-github-username/dataweb
       branch: main
     build_command: pip install -r requirements.txt
     run_command: streamlit run main.py --server.port $PORT --server.address 0.0.0.0
@@ -99,9 +99,9 @@ databases:
     production: false
 
 domains:
-  - domain: dataweb.yourdomain.com
+  - domain: dataafrik.com
     type: PRIMARY
-  - domain: www.dataweb.yourdomain.com
+  - domain: www.dataafrik.com
     type: ALIAS
 
 envs:
