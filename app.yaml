@@ -3,7 +3,7 @@ services:
   - name: frontend
     source_dir: /
     github:
-      repo: your-github-username/dataweb
+      repo: wlivinston/dataweb
       branch: main
     build_command: npm install && npm run build
     run_command: npm run preview
@@ -32,7 +32,7 @@ services:
   - name: backend
     source_dir: backend
     github:
-      repo: your-github-username/dataweb
+      repo: wlivinston/dataweb
       branch: main
     build_command: npm install
     run_command: npm start
@@ -67,7 +67,7 @@ services:
   - name: ml-hub
     source_dir: streamlit_apps
     github:
-      repo: your-github-username/dataweb
+      repo: wlivinston/dataweb
       branch: main
     build_command: pip install -r requirements.txt
     run_command: streamlit run main.py --server.port $PORT --server.address 0.0.0.0
