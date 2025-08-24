@@ -15,7 +15,7 @@ services:
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
       - key: VITE_SUPABASE_ANON_KEY
-        value: your_dataweb_anon_key_here
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjkzNDIsImV4cCI6MjA3MDU0NTM0Mn0.b2_QEsEHBGewRGOJHccE9_onobcKgfLU25IoKRdXGGo
         type: SECRET
       - key: NODE_ENV
         value: production
@@ -45,10 +45,10 @@ services:
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
       - key: SUPABASE_SERVICE_ROLE_KEY
-        value: your_supabase_service_role_key_here
+        value: sbp_ad0bd1a56fcea427de1d5c8c2ab5440741693348
         type: SECRET
       - key: SUPABASE_ANON_KEY
-        value: your_dataweb_anon_key_here
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjkzNDIsImV4cCI6MjA3MDU0NTM0Mn0.b2_QEsEHBGewRGOJHccE9_onobcKgfLU25IoKRdXGGo
         type: SECRET
       - key: NODE_ENV
         value: production
@@ -80,7 +80,7 @@ services:
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
       - key: SUPABASE_ANON_KEY
-        value: your_dataweb_anon_key_here
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjkzNDIsImV4cCI6MjA3MDU0NTM0Mn0.b2_QEsEHBGewRGOJHccE9_onobcKgfLU25IoKRdXGGo
         type: SECRET
     routes:
       - path: /ml
