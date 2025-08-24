@@ -1,0 +1,67 @@
+name: dataweb-backend
+services:
+  - name: api
+    source_dir: /backend
+    github:
+      repo: your-username/dataweb
+      branch: main
+    run_command: npm start
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 3001
+    envs:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3001"
+      - key: DATABASE_URL
+        value: ${DATABASE_URL}
+        type: SECRET
+      - key: JWT_SECRET
+        value: ${JWT_SECRET}
+        type: SECRET
+      - key: SMTP_HOST
+        value: ${SMTP_HOST}
+      - key: SMTP_PORT
+        value: ${SMTP_PORT}
+      - key: SMTP_USER
+        value: ${SMTP_USER}
+        type: SECRET
+      - key: SMTP_PASS
+        value: ${SMTP_PASS}
+        type: SECRET
+      - key: FRONTEND_URL
+        value: ${FRONTEND_URL}
+      - key: ADMIN_EMAIL
+        value: ${ADMIN_EMAIL}
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 10
+      period_seconds: 10
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 3
+
+databases:
+  - name: dataweb-db
+    engine: PG
+    version: "15"
+    production: false
+    cluster_name: dataweb-cluster
+
+envs:
+  - key: DATABASE_URL
+    value: ${DATABASE_URL}
+    type: SECRET
+  - key: JWT_SECRET
+    value: ${JWT_SECRET}
+    type: SECRET
+  - key: SMTP_USER
+    value: ${SMTP_USER}
+    type: SECRET
+  - key: SMTP_PASS
+    value: ${SMTP_PASS}
+    type: SECRET
+
+region: nyc

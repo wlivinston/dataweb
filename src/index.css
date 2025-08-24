@@ -1,0 +1,352 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 220 23% 95%;
+    --sidebar-foreground: 215 25% 27%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 90%;
+    --sidebar-accent-foreground: 215 25% 27%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 221 83% 53%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215.20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    --sidebar-background: 215 28% 17%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217.2 91.2% 59.8%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 25% 27%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 215 25% 27%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans dark:bg-background dark:text-foreground;
+  }
+
+  pre, code {
+    @apply font-mono;
+  }
+}
+
+.markdown-editor {
+  @apply font-mono text-base leading-relaxed;
+}
+
+/* Professional Newspaper-style Blog Layout */
+.blog-container {
+  @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.blog-header {
+  @apply text-center mb-12 border-b border-gray-200 pb-8;
+}
+
+.blog-title {
+  @apply font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-4;
+  font-family: 'Playfair Display', serif;
+}
+
+.blog-subtitle {
+  @apply text-xl md:text-2xl text-gray-600 font-light mb-6;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.blog-meta {
+  @apply flex flex-wrap justify-center items-center gap-4 text-sm text-gray-500 mb-8;
+  font-family: 'Source Sans Pro', sans-serif;
+}
+
+.blog-author {
+  @apply font-semibold text-gray-700;
+}
+
+.blog-date {
+  @apply flex items-center gap-1;
+}
+
+.blog-category {
+  @apply bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium;
+}
+
+.blog-read-time {
+  @apply flex items-center gap-1;
+}
+
+/* Enhanced Markdown Styling */
+.markdown-preview {
+  @apply prose prose-lg max-w-none prose-blue dark:prose-invert;
+  font-family: 'Source Sans Pro', sans-serif;
+  line-height: 1.8;
+}
+
+.markdown-preview h1 {
+  @apply font-serif text-4xl md:text-5xl font-bold text-gray-900 mb-8 mt-12 first:mt-0;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-preview h2 {
+  @apply font-serif text-3xl md:text-4xl font-semibold text-gray-800 mb-6 mt-10;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-preview h3 {
+  @apply font-serif text-2xl md:text-3xl font-semibold text-gray-800 mb-4 mt-8;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-preview h4 {
+  @apply font-serif text-xl md:text-2xl font-semibold text-gray-800 mb-3 mt-6;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-preview h5 {
+  @apply font-serif text-lg md:text-xl font-semibold text-gray-800 mb-2 mt-4;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-preview h6 {
+  @apply font-serif text-base md:text-lg font-semibold text-gray-800 mb-2 mt-4;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-preview p {
+  @apply text-gray-700 mb-6 leading-relaxed;
+  font-size: 1.125rem;
+}
+
+.markdown-preview strong {
+  @apply font-semibold text-gray-900;
+}
+
+.markdown-preview em {
+  @apply italic text-gray-800;
+}
+
+.markdown-preview blockquote {
+  @apply border-l-4 border-blue-500 pl-6 py-4 my-8 bg-blue-50 dark:bg-blue-900/20 rounded-r-lg;
+  font-style: italic;
+}
+
+.markdown-preview blockquote p {
+  @apply text-gray-700 dark:text-gray-300 mb-0;
+  font-size: 1.25rem;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  @apply my-6 ml-6 space-y-2;
+}
+
+.markdown-preview li {
+  @apply text-gray-700 leading-relaxed;
+}
+
+.markdown-preview ul li {
+  @apply list-disc;
+}
+
+.markdown-preview ol li {
+  @apply list-decimal;
+}
+
+.markdown-preview pre {
+  @apply bg-gray-900 text-gray-100 p-6 rounded-lg overflow-x-auto my-8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875rem;
+}
+
+.markdown-preview code {
+  @apply bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm font-mono;
+}
+
+.markdown-preview pre code {
+  @apply bg-transparent p-0 text-gray-100;
+}
+
+.markdown-preview img {
+  @apply rounded-lg shadow-lg my-8 mx-auto max-w-full h-auto;
+}
+
+.markdown-preview figure {
+  @apply my-8;
+}
+
+.markdown-preview figcaption {
+  @apply text-center text-sm text-gray-600 mt-2 italic;
+}
+
+.markdown-preview table {
+  @apply w-full border-collapse border border-gray-300 my-8;
+}
+
+.markdown-preview th {
+  @apply bg-gray-100 dark:bg-gray-800 border border-gray-300 px-4 py-2 text-left font-semibold;
+}
+
+.markdown-preview td {
+  @apply border border-gray-300 px-4 py-2;
+}
+
+.markdown-preview hr {
+  @apply my-12 border-t-2 border-gray-200 dark:border-gray-700;
+}
+
+/* Callout boxes for important information */
+.markdown-preview .callout {
+  @apply bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-400 p-6 my-8 rounded-r-lg;
+}
+
+.markdown-preview .callout-info {
+  @apply bg-blue-50 dark:bg-blue-900/20 border-blue-400;
+}
+
+.markdown-preview .callout-warning {
+  @apply bg-orange-50 dark:bg-orange-900/20 border-orange-400;
+}
+
+.markdown-preview .callout-success {
+  @apply bg-green-50 dark:bg-green-900/20 border-green-400;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+  .blog-title {
+    @apply text-3xl;
+  }
+  
+  .blog-subtitle {
+    @apply text-lg;
+  }
+  
+  .markdown-preview h1 {
+    @apply text-3xl;
+  }
+  
+  .markdown-preview h2 {
+    @apply text-2xl;
+  }
+  
+  .markdown-preview h3 {
+    @apply text-xl;
+  }
+  
+  .markdown-preview p {
+    @apply text-base;
+  }
+}
+
+/* Blog sidebar for related content */
+.blog-sidebar {
+  @apply lg:col-span-1;
+}
+
+.blog-main {
+  @apply lg:col-span-3;
+}
+
+/* Social sharing buttons */
+.social-share {
+  @apply flex gap-4 mt-8 pt-8 border-t border-gray-200;
+}
+
+.social-share button {
+  @apply flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+}
+
+.social-share .twitter {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.social-share .linkedin {
+  @apply bg-blue-700 text-white hover:bg-blue-800;
+}
+
+.social-share .facebook {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+/* Author bio section */
+.author-bio {
+  @apply bg-gray-50 dark:bg-gray-800 p-6 rounded-lg mt-12;
+}
+
+.author-bio h3 {
+  @apply font-serif text-xl font-semibold mb-3;
+}
+
+.author-bio p {
+  @apply text-gray-600 dark:text-gray-300 mb-0;
+}
