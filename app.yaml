@@ -5,7 +5,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install && npx vite build
+    build_command: npm install && ./node_modules/.bin/vite build
     run_command: npm run preview
     environment_slug: node-js
     instance_count: 1
