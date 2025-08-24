@@ -1,11 +1,11 @@
-name: dataafrik-platform-v2
+name: dataafrik-platform
 services:
   - name: frontend
     source_dir: /
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install && npm run build
+    build_command: npm install && npx vite build
     run_command: npm run preview
     environment_slug: node-js
     instance_count: 1
