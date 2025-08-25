@@ -5,7 +5,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install --include=dev && npm run build
+    build_command: npm install && npm run build
     run_command: npx serve -s dist -l $PORT
     environment_slug: node-js
     instance_count: 1
@@ -29,7 +29,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install --include=dev
+    build_command: npm install
     run_command: npm start
     environment_slug: node-js
     instance_count: 1
