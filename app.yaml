@@ -29,7 +29,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install
+    build_command: npm install --include=dev
     run_command: npm start
     environment_slug: node-js
     instance_count: 1
@@ -52,7 +52,7 @@ services:
     routes:
       - path: /api
     health_check:
-      http_path: /api/health
+      http_path: /health
 
   - name: ml-hub
     source_dir: streamlit_apps
