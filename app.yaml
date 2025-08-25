@@ -75,7 +75,7 @@ services:
     routes:
       - path: /ml
     health_check:
-      http_path: /ml
+      http_path: /
 
 databases:
   - name: dataweb-db
