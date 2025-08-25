@@ -5,7 +5,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install && npm run build
+    build_command: npm install --legacy-peer-deps && npm run build
     run_command: npx serve -s dist -l $PORT
     environment_slug: node-js
     instance_count: 1
@@ -14,9 +14,11 @@ services:
       - key: VITE_SUPABASE_URL
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
+        scope: RUN_AND_BUILD_TIME
       - key: VITE_SUPABASE_ANON_KEY
         value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjkzNDIsImV4cCI6MjA3MDU0NTM0Mn0.b2_QEsEHBGewRGOJHccE9_onobcKgfLU25IoKRdXGGo
         type: SECRET
+        scope: RUN_AND_BUILD_TIME
       - key: NODE_ENV
         value: production
     routes:
@@ -29,12 +31,11 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: npm install
+    build_command: npm install --legacy-peer-deps
     run_command: npm start
     environment_slug: node-js
     instance_count: 1
     instance_size_slug: basic-xxs
-    http_port: 3001
     envs:
       - key: SUPABASE_URL
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
@@ -47,8 +48,6 @@ services:
         type: SECRET
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "3001"
     routes:
       - path: /api
     health_check:
@@ -64,14 +63,15 @@ services:
     environment_slug: python
     instance_count: 1
     instance_size_slug: basic-xxs
-    http_port: 8501
     envs:
       - key: SUPABASE_URL
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
+        scope: RUN_AND_BUILD_TIME
       - key: SUPABASE_ANON_KEY
         value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjkzNDIsImV4cCI6MjA3MDU0NTM0Mn0.b2_QEsEHBGewRGOJHccE9_onobcKgfLU25IoKRdXGGo
         type: SECRET
+        scope: RUN_AND_BUILD_TIME
     routes:
       - path: /ml
     health_check:
