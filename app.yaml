@@ -5,7 +5,7 @@ services:
     github:
       repo: wlivinston/dataweb
       branch: master
-    build_command: echo "Using pre-built files"
+    build_command: npm install
     run_command: npx serve -s dist -l $PORT
     environment_slug: node-js
     instance_count: 1
