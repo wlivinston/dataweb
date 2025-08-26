@@ -1,58 +1,87 @@
-const { Pool } = require('pg');
-
-// Database configuration
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
-});
-
-// Test the connection
-pool.on('connect', () => {
-  console.log('🔗 Connected to PostgreSQL database');
-});
-
-pool.on('error', (err) => {
-  console.error('❌ Unexpected error on idle client', err);
-  process.exit(-1);
-});
+const { supabase } = require('./supabase');
 
 // Connect to database
 const connectDB = async () => {
   try {
-    const client = await pool.connect();
+    // Test the connection by making a simple query
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('id')
+      .limit(1);
+    
+    if (error) {
+      console.error('❌ Database connection failed:', error.message);
+      // Don't throw error, just log it and continue
+      console.log('⚠️  Continuing without database connection test...');
+      return;
+    }
+    
     console.log('✅ Database connection successful');
-    client.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
-    throw error;
+    // Don't throw error, just log it and continue
+    console.log('⚠️  Continuing without database connection test...');
   }
 };
 
-// Execute a query
-const query = async (text, params) => {
+// Execute a query using Supabase
+const query = async (table, operation, params = {}) => {
   const start = Date.now();
   try {
-    const res = await pool.query(text, params);
+    let result;
+    
+    switch (operation.type) {
+      case 'select':
+        result = await supabase
+          .from(table)
+          .select(params.select || '*')
+          .match(params.match || {})
+          .order(params.order || 'created_at', { ascending: false })
+          .range(params.range?.from || 0, params.range?.to || 999);
+        break;
+      case 'insert':
+        result = await supabase
+          .from(table)
+          .insert(params.data);
+        break;
+      case 'update':
+        result = await supabase
+          .from(table)
+          .update(params.data)
+          .match(params.match);
+        break;
+      case 'delete':
+        result = await supabase
+          .from(table)
+          .delete()
+          .match(params.match);
+        break;
+      default:
+        throw new Error(`Unknown operation type: ${operation.type}`);
+    }
+    
     const duration = Date.now() - start;
-    console.log('📊 Executed query', { text, duration, rows: res.rowCount });
-    return res;
+    console.log('📊 Executed query', { table, operation: operation.type, duration, rows: result.data?.length || 0 });
+    
+    if (result.error) {
+      throw result.error;
+    }
+    
+    return result;
   } catch (error) {
     console.error('❌ Query error:', error);
     throw error;
   }
 };
 
-// Get a client from the pool
-const getClient = async () => {
-  return await pool.connect();
+// Get Supabase client
+const getClient = () => {
+  return supabase;
 };
 
 module.exports = {
   connectDB,
   query,
   getClient,
-  pool
+  supabase
 };

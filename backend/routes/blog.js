@@ -1,8 +1,5 @@
 const express = require('express');
-const matter = require('gray-matter');
-const fs = require('fs');
-const path = require('path');
-const { query } = require('../config/database');
+const { supabase } = require('../config/supabase');
 const { optionalAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -11,67 +8,52 @@ const router = express.Router();
 router.get('/posts', optionalAuth, async (req, res) => {
   try {
     const { page = 1, limit = 10, category, tag, search } = req.query;
-    const offset = (page - 1) * limit;
+    const from = (page - 1) * limit;
+    const to = from + parseInt(limit) - 1;
 
-    // Build query conditions
-    let whereConditions = ['published = true'];
-    let params = [limit, offset];
-    let paramIndex = 3;
+    // Build query
+    let query = supabase
+      .from('blog_posts')
+      .select('*', { count: 'exact' })
+      .eq('published', true);
 
     if (category) {
-      whereConditions.push(`category = $${paramIndex}`);
-      params.push(category);
-      paramIndex++;
+      query = query.eq('category', category);
     }
 
     if (tag) {
-      whereConditions.push(`$${paramIndex} = ANY(tags)`);
-      params.push(tag);
-      paramIndex++;
+      query = query.contains('tags', [tag]);
     }
 
     if (search) {
-      whereConditions.push(`(title ILIKE $${paramIndex} OR excerpt ILIKE $${paramIndex} OR content ILIKE $${paramIndex})`);
-      const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm, searchTerm);
-      paramIndex += 3;
+      query = query.or(`title.ilike.%${search}%,excerpt.ilike.%${search}%,content.ilike.%${search}%`);
     }
 
-    const whereClause = whereConditions.join(' AND ');
+    // Get posts with pagination
+    const { data: posts, error, count } = await query
+      .order('featured', { ascending: false })
+      .order('published_at', { ascending: false })
+      .range(from, to);
 
-    // Get total count
-    const countResult = await query(
-      `SELECT COUNT(*) FROM blog_posts WHERE ${whereClause}`,
-      params.slice(2) // Remove limit and offset
-    );
-    const totalPosts = parseInt(countResult.rows[0].count);
-
-    // Get posts
-    const result = await query(
-      `SELECT 
-        id, slug, title, excerpt, author, category, tags, featured, 
-        published_at, created_at, updated_at, read_time, view_count, like_count, comment_count
-       FROM blog_posts 
-       WHERE ${whereClause}
-       ORDER BY featured DESC, published_at DESC
-       LIMIT $1 OFFSET $2`,
-      params
-    );
+    if (error) {
+      console.error('Get blog posts error:', error);
+      return res.status(500).json({ error: 'Failed to fetch blog posts' });
+    }
 
     // Add user interaction data if authenticated
-    const posts = result.rows.map(post => ({
+    const postsWithUserData = posts.map(post => ({
       ...post,
       user_liked: false, // You can implement this based on user likes
       user_bookmarked: false // You can implement this based on user bookmarks
     }));
 
     res.json({
-      posts,
+      posts: postsWithUserData,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
-        total: totalPosts,
-        pages: Math.ceil(totalPosts / limit)
+        total: count || 0,
+        pages: Math.ceil((count || 0) / limit)
       }
     });
 
@@ -87,50 +69,42 @@ router.get('/posts/:slug', optionalAuth, async (req, res) => {
     const { slug } = req.params;
 
     // Get post from database
-    const result = await query(
-      `SELECT 
-        id, slug, title, excerpt, content, author, category, tags, featured, 
-        published_at, created_at, updated_at, read_time, view_count, like_count, comment_count
-       FROM blog_posts 
-       WHERE slug = $1 AND published = true`,
-      [slug]
-    );
+    const { data: post, error: postError } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .single();
 
-    if (result.rows.length === 0) {
+    if (postError || !post) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
 
-    const post = result.rows[0];
-
     // Increment view count
-    await query(
-      'UPDATE blog_posts SET view_count = view_count + 1 WHERE id = $1',
-      [post.id]
-    );
+    await supabase
+      .from('blog_posts')
+      .update({ view_count: post.view_count + 1 })
+      .eq('id', post.id);
 
     // Record page view for analytics
-    await query(
-      `INSERT INTO page_views (page_url, ip_address, user_agent, referrer)
-       VALUES ($1, $2, $3, $4)`,
-      [
-        `/blog/${slug}`,
-        req.ip,
-        req.get('User-Agent'),
-        req.get('Referrer')
-      ]
-    );
+    await supabase
+      .from('page_views')
+      .insert({
+        page_url: `/blog/${slug}`,
+        ip_address: req.ip,
+        user_agent: req.get('User-Agent'),
+        referrer: req.get('Referrer')
+      });
 
     // Get related posts
-    const relatedResult = await query(
-      `SELECT id, slug, title, excerpt, author, category, published_at, view_count
-       FROM blog_posts 
-       WHERE published = true 
-       AND id != $1 
-       AND (category = $2 OR $3 = ANY(tags))
-       ORDER BY published_at DESC 
-       LIMIT 3`,
-      [post.id, post.category, post.tags?.[0] || null]
-    );
+    const { data: related, error: relatedError } = await supabase
+      .from('blog_posts')
+      .select('id, slug, title, excerpt, author, category, published_at, view_count')
+      .eq('published', true)
+      .neq('id', post.id)
+      .or(`category.eq.${post.category},tags.cs.{${post.tags?.[0] || ''}}`)
+      .order('published_at', { ascending: false })
+      .limit(3);
 
     res.json({
       post: {
@@ -138,7 +112,7 @@ router.get('/posts/:slug', optionalAuth, async (req, res) => {
         user_liked: false, // You can implement this based on user likes
         user_bookmarked: false // You can implement this based on user bookmarks
       },
-      related_posts: relatedResult.rows
+      related_posts: related || []
     });
 
   } catch (error) {

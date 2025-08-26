@@ -40,9 +40,9 @@ services:
       - key: SUPABASE_URL
         value: https://wjeqwwilkbpqwuffiuio.supabase.co
         type: SECRET
-      - key: SUPABASE_SERVICE_ROLE_KEY
-        value: sbp_ad0bd1a56fcea427de1d5c8c2ab5440741693348
-        type: SECRET
+                    - key: SUPABASE_SERVICE_ROLE_KEY
+                value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDk2OTM0MiwiZXhwIjoyMDcwNTQ1MzQyfQ.tTJK-p4jIO4FwVyVUmNQx7gUaP5J7SZNoLvJPeCsT-k
+                type: SECRET
       - key: SUPABASE_ANON_KEY
         value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZXF3d2lsa2JwcXd1ZmZpdWlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5NjkzNDIsImV4cCI6MjA3MDU0NTM0Mn0.b2_QEsEHBGewRGOJHccE9_onobcKgfLU25IoKRdXGGo
         type: SECRET
