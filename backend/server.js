@@ -64,9 +64,14 @@ app.use('*', (req, res) => {
 // Start server
 const startServer = async () => {
   try {
-    // Connect to database
-    await connectDB();
-    console.log('✅ Database connected successfully');
+    // Try to connect to database (optional - don't block server startup)
+    try {
+      await connectDB();
+      console.log('✅ Database connected successfully');
+    } catch (dbError) {
+      console.log('⚠️  Database connection failed, but server will continue:', dbError.message);
+      console.log('⚠️  This is expected if Supabase tables are not set up yet');
+    }
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
