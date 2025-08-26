@@ -152,6 +152,15 @@ const Login: React.FC = () => {
                 {loading ? 'Creating account...' : 'Create Account'}
               </Button>
             </div>
+
+            <div className="text-center space-y-2">
+              <a href="/login?action=forgot-password" className="text-sm text-blue-600 hover:underline block">
+                Forgot your password?
+              </a>
+              <a href="/login?action=signup" className="text-sm text-blue-600 hover:underline block">
+                Don't have an account? Sign up
+              </a>
+            </div>
           </form>
 
           <div className="mt-6 text-center text-sm text-gray-600">

@@ -19,7 +19,8 @@ const Navbar: React.FC<NavbarProps> = ({
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
     { id: 'projects', label: 'Projects' },
-    { id: 'blog', label: 'Blog' },
+    { id: 'blog', label: 'Blog', href: '/blog' },
+    { id: 'ml-hub', label: 'ML Hub', href: '/ml' },
     { id: 'about', label: 'Who We Are' }
   ];
 
@@ -40,17 +41,27 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    activeSection === item.id
-                      ? 'bg-green-100 text-green-700'
-                      : 'text-gray-700 hover:bg-amber-100'
-                  }`}
-                >
-                  {item.label}
-                </button>
+                item.href ? (
+                  <a
+                    key={item.id}
+                    href={item.href}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-amber-100 transition-colors"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveSection(item.id)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      activeSection === item.id
+                        ? 'bg-green-100 text-green-700'
+                        : 'text-gray-700 hover:bg-amber-100'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                )
               ))}
             </div>
           </div>
@@ -73,20 +84,31 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="md:hidden bg-amber-50 border-t border-amber-200">
           <div className="px-2 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActiveSection(item.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  activeSection === item.id
-                    ? 'bg-green-100 text-green-700'
-                    : 'text-gray-700 hover:bg-amber-100'
-                }`}
-              >
-                {item.label}
-              </button>
+              item.href ? (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-amber-100 transition-colors"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors ${
+                    activeSection === item.id
+                      ? 'bg-green-100 text-green-700'
+                      : 'text-gray-700 hover:bg-amber-100'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              )
             ))}
           </div>
         </div>

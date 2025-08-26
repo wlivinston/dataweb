@@ -43,11 +43,11 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Services</h4>
             <ul className="space-y-2 text-gray-300">
-              <li><a href="#" className="hover:text-white transition-colors">Data Analytics</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Machine Learning</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Data Engineering</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Business Intelligence</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Database Design & Smart Data Collection</a></li>
+                          <li><a href="/blog?category=Analytics" className="hover:text-white transition-colors">Data Analytics</a></li>
+            <li><a href="/blog?category=Machine%20Learning" className="hover:text-white transition-colors">Machine Learning</a></li>
+            <li><a href="/blog?category=Engineering" className="hover:text-white transition-colors">Data Engineering</a></li>
+            <li><a href="/blog?category=Business%20Intelligence" className="hover:text-white transition-colors">Business Intelligence</a></li>
+            <li><a href="/blog?category=Database" className="hover:text-white transition-colors">Database Design & Smart Data Collection</a></li>
             </ul>
           </div>
 
