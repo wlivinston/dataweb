@@ -1,26 +1,43 @@
 -- Cleanup Script for DataWeb Supabase Project
--- This script removes all existing tables to prepare for the new free blog setup
+-- This script removes all existing tables that don't belong to the free blog
+
+-- First, let's see what tables currently exist
+SELECT 'Current tables in public schema:' as info;
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'public'
+ORDER BY table_name;
 
 -- Drop all existing tables in the correct order (respecting foreign key constraints)
--- Start with tables that have foreign key dependencies
+-- These tables are from a different application and don't belong to the free blog
 
--- Drop subscription-related tables first (if they exist)
-DROP TABLE IF EXISTS subscription_payments CASCADE;
-DROP TABLE IF EXISTS customer_subscriptions CASCADE;
-DROP TABLE IF EXISTS subscription_plans CASCADE;
+-- Drop reel-related tables first (they likely have foreign key dependencies)
+DROP TABLE IF EXISTS reel_shares CASCADE;
+DROP TABLE IF EXISTS reel_saves CASCADE;
+DROP TABLE IF EXISTS reel_likes CASCADE;
+DROP TABLE IF EXISTS reel_comment_likes CASCADE;
+DROP TABLE IF EXISTS reel_comments CASCADE;
+DROP TABLE IF EXISTS reel_views CASCADE;
+DROP TABLE IF EXISTS reels CASCADE;
+DROP TABLE IF EXISTS user_reel_stats CASCADE;
+DROP TABLE IF EXISTS popular_reels CASCADE;
 
--- Drop analytics and interaction tables
-DROP TABLE IF EXISTS page_views CASCADE;
-DROP TABLE IF EXISTS post_likes CASCADE;
-DROP TABLE IF EXISTS comment_likes CASCADE;
+-- Drop service provider tables
+DROP TABLE IF EXISTS ratings CASCADE;
+DROP TABLE IF EXISTS providers CASCADE;
+DROP TABLE IF EXISTS services CASCADE;
+DROP TABLE IF EXISTS locations CASCADE;
 
--- Drop content tables
-DROP TABLE IF EXISTS blog_comments CASCADE;
-DROP TABLE IF EXISTS blog_posts CASCADE;
+-- Drop booking and payment tables
+DROP TABLE IF EXISTS bookings CASCADE;
+DROP TABLE IF EXISTS payouts CASCADE;
+DROP TABLE IF EXISTS disputes CASCADE;
+DROP TABLE IF EXISTS paystack_cred CASCADE;
 
--- Drop user and newsletter tables
-DROP TABLE IF EXISTS newsletter_subscribers CASCADE;
-DROP TABLE IF EXISTS customers CASCADE;
+-- Drop user and notification tables
+DROP TABLE IF EXISTS profiles CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS webhook_events CASCADE;
 
 -- Drop any other tables that might exist (catch-all)
 -- This will drop any remaining tables in the public schema

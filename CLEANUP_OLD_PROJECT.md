@@ -63,11 +63,23 @@ Once the cleanup is complete:
 
 ## What Gets Removed
 
-The cleanup script will remove:
-- All existing tables in the public schema
-- Any sequences or functions
-- Extensions that might conflict
-- Any other database objects
+The cleanup script will remove all existing tables that don't belong to your free blog:
+
+**Reel/Content Tables:**
+- reel_shares, reel_saves, reel_likes
+- reel_comments, reel_comment_likes, reel_views
+- reels, user_reel_stats, popular_reels
+
+**Service Provider Tables:**
+- ratings, providers, services, locations
+
+**Booking & Payment Tables:**
+- bookings, payouts, disputes, paystack_cred
+
+**User & System Tables:**
+- profiles, notifications, webhook_events
+
+**Plus any other tables** that might exist in the public schema
 
 ## What Gets Created (After Cleanup)
 
