@@ -10,11 +10,14 @@ const BlogPost: React.FC = () => {
   const [post, setPost] = useState<PostData | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/posts")
+    fetch(`http://localhost:3001/api/blog/posts/${slug}`)
       .then(res => res.json())
-      .then((posts: PostData[]) => {
-        const found = posts.find(p => p.slug === slug);
-        setPost(found || null);
+      .then((data: { post: PostData }) => {
+        setPost(data.post || null);
+      })
+      .catch(error => {
+        console.error('Error fetching post:', error);
+        setPost(null);
       });
   }, [slug]);
 
