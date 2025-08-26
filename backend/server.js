@@ -38,7 +38,9 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    supabase_configured: !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+    message: 'Backend API is running'
   });
 });
 
@@ -64,19 +66,17 @@ app.use('*', (req, res) => {
 // Start server
 const startServer = async () => {
   try {
-    // Try to connect to database (optional - don't block server startup)
-    try {
-      await connectDB();
-      console.log('✅ Database connected successfully');
-    } catch (dbError) {
-      console.log('⚠️  Database connection failed, but server will continue:', dbError.message);
-      console.log('⚠️  This is expected if Supabase tables are not set up yet');
-    }
-
+    // Start the server immediately
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Health check: http://localhost:${PORT}/health`);
       console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
+    });
+
+    // Try to connect to database in background (completely optional)
+    connectDB().catch(error => {
+      console.log('⚠️  Database connection attempt failed:', error.message);
+      console.log('✅ Server continues running without database connection');
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);

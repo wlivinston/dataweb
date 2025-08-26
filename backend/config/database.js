@@ -1,29 +1,28 @@
 const { supabase } = require('./supabase');
 
-// Connect to database
+// Connect to database (optional - won't block server startup)
 const connectDB = async () => {
   try {
-    console.log('🔗 Attempting to connect to Supabase...');
+    console.log('🔗 Testing Supabase connection...');
     
-    // Test the connection by making a simple query
+    // Simple connection test - just check if we can reach Supabase
     const { data, error } = await supabase
       .from('blog_posts')
       .select('id')
       .limit(1);
     
     if (error) {
-      console.error('❌ Database connection failed:', error.message);
-      console.log('⚠️  This might be expected if tables don\'t exist yet');
-      console.log('⚠️  Continuing without database connection test...');
+      console.log('⚠️  Supabase connection test failed:', error.message);
+      console.log('⚠️  This is expected if tables don\'t exist yet');
+      console.log('✅ Server will continue without database connection');
       return;
     }
     
-    console.log('✅ Database connection successful');
+    console.log('✅ Supabase connection successful');
     console.log(`📊 Found ${data?.length || 0} blog posts`);
   } catch (error) {
-    console.error('❌ Database connection failed:', error.message);
-    console.log('⚠️  This might be expected if tables don\'t exist yet');
-    console.log('⚠️  Continuing without database connection test...');
+    console.log('⚠️  Supabase connection test failed:', error.message);
+    console.log('✅ Server will continue without database connection');
   }
 };
 
