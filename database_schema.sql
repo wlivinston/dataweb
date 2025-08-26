@@ -160,3 +160,45 @@ CREATE POLICY "Allow public newsletter subscription" ON newsletter_subscribers
 -- Allow public to view page views (for analytics)
 CREATE POLICY "Allow public page view tracking" ON page_views
     FOR INSERT WITH CHECK (true);
+
+-- Allow public to insert comments (they'll be moderated)
+CREATE POLICY "Allow public to insert comments" ON blog_comments
+    FOR INSERT WITH CHECK (true);
+
+-- Allow public to like posts and comments
+CREATE POLICY "Allow public to like posts" ON post_likes
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public to like comments" ON comment_likes
+    FOR INSERT WITH CHECK (true);
+
+-- Allow public to read likes (for displaying like counts)
+CREATE POLICY "Allow public to read post likes" ON post_likes
+    FOR SELECT USING (true);
+
+CREATE POLICY "Allow public to read comment likes" ON comment_likes
+    FOR SELECT USING (true);
+
+-- Allow public to read page views (for analytics)
+CREATE POLICY "Allow public to read page views" ON page_views
+    FOR SELECT USING (true);
+
+-- Allow public to read newsletter subscribers (for admin purposes)
+CREATE POLICY "Allow public to read newsletter subscribers" ON newsletter_subscribers
+    FOR SELECT USING (true);
+
+-- Allow public to update newsletter subscription status
+CREATE POLICY "Allow public to update newsletter subscription" ON newsletter_subscribers
+    FOR UPDATE USING (true);
+
+-- Allow public to insert customers (for registration)
+CREATE POLICY "Allow public to register customers" ON customers
+    FOR INSERT WITH CHECK (true);
+
+-- Allow public to read customer data (for login verification)
+CREATE POLICY "Allow public to read customer data for auth" ON customers
+    FOR SELECT USING (true);
+
+-- Allow public to update customer data (for password reset, email verification)
+CREATE POLICY "Allow public to update customer data" ON customers
+    FOR UPDATE USING (true);
