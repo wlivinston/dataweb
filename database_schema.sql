@@ -1,161 +1,162 @@
--- Database Schema for DataWeb Platform
--- Customer Subscriptions and Blog Comments System
+-- DataWeb Database Schema for Supabase (Free Blog)
+-- This script creates all the tables needed for a free blog backend
 
--- =============================================
--- CUSTOMER SUBSCRIPTIONS
--- =============================================
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE customers (
-    id SERIAL PRIMARY KEY,
+-- 1. CUSTOMERS TABLE (for user authentication and profiles)
+CREATE TABLE IF NOT EXISTS customers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    company VARCHAR(200),
-    phone VARCHAR(20),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
+    company VARCHAR(255),
+    password_hash VARCHAR(255),
     is_active BOOLEAN DEFAULT true,
-    subscription_status VARCHAR(50) DEFAULT 'free',
-    last_login TIMESTAMP
-);
-
-CREATE TABLE subscription_plans (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    price DECIMAL(10,2) NOT NULL,
-    billing_cycle VARCHAR(20) NOT NULL, -- monthly, yearly, quarterly
-    features JSONB, -- Store features as JSON
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE customer_subscriptions (
-    id SERIAL PRIMARY KEY,
-    customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
-    plan_id INTEGER REFERENCES subscription_plans(id),
-    status VARCHAR(50) NOT NULL, -- active, cancelled, expired, pending
-    start_date DATE NOT NULL,
-    end_date DATE,
-    auto_renew BOOLEAN DEFAULT true,
-    payment_method VARCHAR(100),
+    email_verified BOOLEAN DEFAULT false,
+    verification_token VARCHAR(255),
+    verification_expires TIMESTAMP,
+    reset_token VARCHAR(255),
+    reset_expires TIMESTAMP,
+    last_login TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE subscription_payments (
-    id SERIAL PRIMARY KEY,
-    subscription_id INTEGER REFERENCES customer_subscriptions(id) ON DELETE CASCADE,
-    amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'USD',
-    payment_method VARCHAR(100),
-    transaction_id VARCHAR(255),
-    status VARCHAR(50) NOT NULL, -- success, failed, pending, refunded
-    payment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- =============================================
--- BLOG COMMENTS SYSTEM
--- =============================================
-
-CREATE TABLE blog_posts (
-    id SERIAL PRIMARY KEY,
+-- 2. BLOG_POSTS TABLE (for blog content)
+CREATE TABLE IF NOT EXISTS blog_posts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     slug VARCHAR(255) UNIQUE NOT NULL,
     title VARCHAR(255) NOT NULL,
     excerpt TEXT,
     content TEXT NOT NULL,
     author VARCHAR(100) NOT NULL,
-    category VARCHAR(100),
-    tags TEXT[], -- Array of tags
+    category VARCHAR(100) DEFAULT 'General',
+    tags TEXT[] DEFAULT '{}',
     featured BOOLEAN DEFAULT false,
-    published BOOLEAN DEFAULT true,
-    published_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    read_time VARCHAR(20),
+    published BOOLEAN DEFAULT false,
+    published_at TIMESTAMP,
+    read_time INTEGER DEFAULT 5,
     view_count INTEGER DEFAULT 0,
-    like_count INTEGER DEFAULT 0
-);
-
-CREATE TABLE blog_comments (
-    id SERIAL PRIMARY KEY,
-    post_id INTEGER REFERENCES blog_posts(id) ON DELETE CASCADE,
-    parent_id INTEGER REFERENCES blog_comments(id) ON DELETE CASCADE, -- For nested replies
-    author_name VARCHAR(100) NOT NULL,
-    author_email VARCHAR(255) NOT NULL,
-    author_website VARCHAR(255),
-    content TEXT NOT NULL,
-    is_approved BOOLEAN DEFAULT false,
-    is_spam BOOLEAN DEFAULT false,
-    ip_address INET,
-    user_agent TEXT,
+    like_count INTEGER DEFAULT 0,
+    comment_count INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE comment_likes (
-    id SERIAL PRIMARY KEY,
-    comment_id INTEGER REFERENCES blog_comments(id) ON DELETE CASCADE,
+-- 3. BLOG_COMMENTS TABLE (for blog comments)
+CREATE TABLE IF NOT EXISTS blog_comments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    post_id UUID NOT NULL REFERENCES blog_posts(id) ON DELETE CASCADE,
+    parent_id UUID REFERENCES blog_comments(id) ON DELETE CASCADE,
+    author_name VARCHAR(100) NOT NULL,
+    author_email VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    ip_address INET,
+    user_agent TEXT,
+    is_approved BOOLEAN DEFAULT false,
+    is_spam BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 4. COMMENT_LIKES TABLE (for comment likes)
+CREATE TABLE IF NOT EXISTS comment_likes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    comment_id UUID NOT NULL REFERENCES blog_comments(id) ON DELETE CASCADE,
     ip_address INET NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(comment_id, ip_address)
 );
 
--- =============================================
--- ANALYTICS & TRACKING
--- =============================================
+-- 5. POST_LIKES TABLE (for blog post likes)
+CREATE TABLE IF NOT EXISTS post_likes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    post_id UUID NOT NULL REFERENCES blog_posts(id) ON DELETE CASCADE,
+    ip_address INET NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(post_id, ip_address)
+);
 
-CREATE TABLE page_views (
-    id SERIAL PRIMARY KEY,
+-- 6. PAGE_VIEWS TABLE (for analytics)
+CREATE TABLE IF NOT EXISTS page_views (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     page_url VARCHAR(500) NOT NULL,
     ip_address INET,
     user_agent TEXT,
     referrer VARCHAR(500),
-    country VARCHAR(100),
-    city VARCHAR(100),
-    device_type VARCHAR(50),
-    browser VARCHAR(100),
-    os VARCHAR(100),
     viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE newsletter_subscribers (
-    id SERIAL PRIMARY KEY,
+-- 7. NEWSLETTER_SUBSCRIBERS TABLE (for email subscriptions)
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
+    source VARCHAR(100) DEFAULT 'website',
     is_active BOOLEAN DEFAULT true,
     subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    unsubscribed_at TIMESTAMP,
-    source VARCHAR(100) -- website, blog, social media, etc.
+    unsubscribed_at TIMESTAMP
 );
 
--- =============================================
--- INDEXES FOR PERFORMANCE
--- =============================================
 
-CREATE INDEX idx_customers_email ON customers(email);
-CREATE INDEX idx_customers_subscription_status ON customers(subscription_status);
-CREATE INDEX idx_subscriptions_customer_id ON customer_subscriptions(customer_id);
-CREATE INDEX idx_subscriptions_status ON customer_subscriptions(status);
-CREATE INDEX idx_blog_posts_slug ON blog_posts(slug);
-CREATE INDEX idx_blog_posts_published ON blog_posts(published);
-CREATE INDEX idx_blog_posts_category ON blog_posts(category);
-CREATE INDEX idx_blog_comments_post_id ON blog_comments(post_id);
-CREATE INDEX idx_blog_comments_approved ON blog_comments(is_approved);
-CREATE INDEX idx_blog_comments_parent_id ON blog_comments(parent_id);
-CREATE INDEX idx_page_views_viewed_at ON page_views(viewed_at);
 
--- =============================================
--- SAMPLE DATA
--- =============================================
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(published);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_category ON blog_posts(category);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_featured ON blog_posts(featured);
+CREATE INDEX IF NOT EXISTS idx_blog_posts_published_at ON blog_posts(published_at);
 
--- Insert sample subscription plans
-INSERT INTO subscription_plans (name, description, price, billing_cycle, features) VALUES
-('Free', 'Basic access to blog content and limited features', 0.00, 'monthly', '["blog_access", "newsletter"]'),
-('Pro', 'Full access to all content, priority support, and advanced analytics', 29.99, 'monthly', '["blog_access", "newsletter", "priority_support", "advanced_analytics", "exclusive_content"]'),
-('Enterprise', 'Custom solutions, dedicated support, and white-label options', 99.99, 'monthly', '["blog_access", "newsletter", "priority_support", "advanced_analytics", "exclusive_content", "custom_solutions", "white_label", "dedicated_support"]');
+CREATE INDEX IF NOT EXISTS idx_blog_comments_post_id ON blog_comments(post_id);
+CREATE INDEX IF NOT EXISTS idx_blog_comments_parent_id ON blog_comments(parent_id);
+CREATE INDEX IF NOT EXISTS idx_blog_comments_approved ON blog_comments(is_approved);
 
--- Insert sample blog posts (if needed)
-INSERT INTO blog_posts (slug, title, excerpt, content, author, category, featured, read_time) VALUES
-('data-analytics-visual-storytelling', 'Data Analytics: Turning Numbers Into Narrative', 'How data analytics helps you tell better stories and make smarter decisions—with a visual and video example.', '# Data Analytics: Turning Numbers Into Narrative\n\n## Introduction\n\nEver wondered how companies like Netflix know what you want to watch next?', 'Senyo K. Tsedze', 'Analytics', true, '5 min read');
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email);
+CREATE INDEX IF NOT EXISTS idx_customers_verification_token ON customers(verification_token);
+CREATE INDEX IF NOT EXISTS idx_customers_reset_token ON customers(reset_token);
+
+CREATE INDEX IF NOT EXISTS idx_page_views_page_url ON page_views(page_url);
+CREATE INDEX IF NOT EXISTS idx_page_views_viewed_at ON page_views(viewed_at);
+
+CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_email ON newsletter_subscribers(email);
+CREATE INDEX IF NOT EXISTS idx_newsletter_subscribers_active ON newsletter_subscribers(is_active);
+
+-- Insert some sample blog posts
+INSERT INTO blog_posts (slug, title, excerpt, content, author, category, tags, featured, published, published_at) VALUES
+('introduction-to-data-analytics', 'Introduction to Data Analytics', 'Learn the fundamentals of data analytics and how it can transform your business decisions.', '# Introduction to Data Analytics\n\nData analytics is the process of examining data sets to draw conclusions about the information they contain.', 'DataWeb Team', 'Analytics', ARRAY['data', 'analytics', 'beginners'], true, true, CURRENT_TIMESTAMP),
+('machine-learning-basics', 'Machine Learning Basics', 'A comprehensive guide to understanding machine learning concepts and applications.', '# Machine Learning Basics\n\nMachine learning is a subset of artificial intelligence that enables systems to learn and improve from experience.', 'DataWeb Team', 'Machine Learning', ARRAY['machine learning', 'AI', 'tutorial'], true, true, CURRENT_TIMESTAMP)
+ON CONFLICT (slug) DO NOTHING;
+
+-- Enable Row Level Security (RLS) for Supabase
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comment_likes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE post_likes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE page_views ENABLE ROW LEVEL SECURITY;
+ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies (basic policies - you may want to customize these)
+-- Allow public read access to published blog posts
+CREATE POLICY "Allow public read access to published blog posts" ON blog_posts
+    FOR SELECT USING (published = true);
+
+-- Allow public read access to approved comments
+CREATE POLICY "Allow public read access to approved comments" ON blog_comments
+    FOR SELECT USING (is_approved = true);
+
+
+
+-- Allow authenticated users to manage their own data
+CREATE POLICY "Allow users to manage their own customer data" ON customers
+    FOR ALL USING (auth.uid()::text = id::text);
+
+-- Allow public to subscribe to newsletter
+CREATE POLICY "Allow public newsletter subscription" ON newsletter_subscribers
+    FOR INSERT WITH CHECK (true);
+
+-- Allow public to view page views (for analytics)
+CREATE POLICY "Allow public page view tracking" ON page_views
+    FOR INSERT WITH CHECK (true);

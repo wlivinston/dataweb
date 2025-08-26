@@ -6,7 +6,6 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const commentRoutes = require('./routes/comments');
-const subscriptionRoutes = require('./routes/subscriptions');
 const blogRoutes = require('./routes/blog');
 const { connectDB } = require('./config/database');
 
@@ -46,7 +45,6 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/comments', commentRoutes);
-app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/blog', blogRoutes);
 
 // Error handling middleware
