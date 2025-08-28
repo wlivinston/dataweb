@@ -10,7 +10,7 @@ const authRoutes = require('./routes/auth');
 const commentRoutes = require('./routes/comments');
 const blogRoutes = require('./routes/blog');
 
-// Supabase-based DB helpers (safe: no localhost:5432)
+// Supabase-based DB helpers (no localhost:5432)
 const { connectDB } = require('./config/database');
 
 const app = express();
@@ -19,20 +19,28 @@ const PORT = process.env.PORT || 3001;
 /* -------------------- Security -------------------- */
 app.use(helmet());
 
-/* -------------------- CORS (put CORS before rate limit & routes) -------------------- */
-const allowedOrigins = new Set([
-  process.env.FRONTEND_URL,          // e.g. https://dataafrik.com  (set in DO env)
-  'https://dataafrik.com',
-  'https://www.dataafrik.com',
-  'http://localhost:5173',           // Vite dev
-]);
+/* -------------------- CORS -------------------- */
+// normalize a URL string to its origin (scheme + host + port)
+const toOrigin = (u) => {
+  try { return new URL(u).origin.replace(/\/$/, ''); }
+  catch { return (u || '').replace(/\/$/, ''); }
+};
+
+const allowedOrigins = new Set(
+  [
+    process.env.FRONTEND_URL,     // e.g. https://www.dataafrik.com (set in DO)
+    'https://dataafrik.com',
+    'https://www.dataafrik.com',
+    'http://localhost:5173',      // Vite dev
+  ].filter(Boolean).map(toOrigin)
+);
 
 app.use(
   cors({
     origin(origin, cb) {
-      // allow server-to-server tools (no Origin header)
+      // allow server-to-server tools and health checks (no Origin header)
       if (!origin) return cb(null, true);
-      const o = origin.replace(/\/$/, ''); // normalize trailing slash
+      const o = toOrigin(origin);
       return cb(null, allowedOrigins.has(o));
     },
     credentials: true,
@@ -85,7 +93,6 @@ app.use('*', (_req, res) => {
 });
 
 /* -------------------- Start Server (then optional DB ping) -------------------- */
-// Start server (then optional DB ping)
 const startServer = async () => {
   try {
     app.listen(PORT, () => {
@@ -95,7 +102,7 @@ const startServer = async () => {
     });
 
     // Non-blocking DB connectivity check; never crashes the app
-    connectDB().catch(err => {
+    connectDB().catch((err) => {
       console.log('⚠️  DB check failed:', err?.message || err);
       console.log('✅ Server continues running without DB');
     });
