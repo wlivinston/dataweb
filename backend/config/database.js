@@ -1,89 +1,90 @@
+// backend/config/database.js
 const { supabase } = require('./supabase');
 
-// Connect to database (optional - won't block server startup)
-const connectDB = async () => {
+// Optional connectivity check that never blocks server startup
+async function connectDB() {
   try {
-    console.log('🔗 Testing Supabase connection...');
-    
-    // Simple connection test - just check if we can reach Supabase
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('id')
-      .limit(1);
-    
+    console.log('🔗 Testing Supabase connection…');
+
+    // ping a trivial query; if table doesn’t exist, just warn and move on
+    const { data, error } = await supabase.from('blog_posts').select('id').limit(1);
+
     if (error) {
-      console.log('⚠️  Supabase connection test failed:', error.message);
-      console.log('⚠️  This is expected if tables don\'t exist yet');
-      console.log('✅ Server will continue without database connection');
+      console.warn('⚠️  Supabase ping failed:', error.message);
+      console.warn("⚠️  That's fine if the table doesn’t exist yet. Server continues.");
       return;
     }
-    
-    console.log('✅ Supabase connection successful');
-    console.log(`📊 Found ${data?.length || 0} blog posts`);
-  } catch (error) {
-    console.log('⚠️  Supabase connection test failed:', error.message);
-    console.log('✅ Server will continue without database connection');
-  }
-};
 
-// Execute a query using Supabase
-const query = async (table, operation, params = {}) => {
+    console.log('✅ Supabase connection OK', `— rows visible: ${data?.length ?? 0}`);
+  } catch (err) {
+    console.warn('⚠️  Supabase ping threw:', err.message);
+    console.warn('✅ Server continues without DB.');
+  }
+}
+
+/**
+ * Tiny helper to run common CRUD operations.
+ * Usage examples:
+ *   await query('subscriptions', { type: 'select', match: { email } })
+ *   await query('subscriptions', { type: 'insert', data: { email } })
+ */
+async function query(table, op = {}) {
   const start = Date.now();
+  const type = op.type;
+
   try {
-    let result;
-    
-    switch (operation.type) {
-      case 'select':
-        result = await supabase
-          .from(table)
-          .select(params.select || '*')
-          .match(params.match || {})
-          .order(params.order || 'created_at', { ascending: false })
-          .range(params.range?.from || 0, params.range?.to || 999);
+    let req = supabase.from(table);
+
+    switch (type) {
+      case 'select': {
+        req = req.select(op.select || '*');
+
+        if (op.match) req = req.match(op.match);
+        if (op.order) {
+          // op.order can be 'created_at' or { column:'created_at', ascending:false }
+          const column = typeof op.order === 'string' ? op.order : op.order.column;
+          const ascending =
+            typeof op.order === 'object' ? !!op.order.ascending : false;
+          req = req.order(column, { ascending });
+        }
+        if (op.range) req = req.range(op.range.from ?? 0, op.range.to ?? 999);
         break;
+      }
+
       case 'insert':
-        result = await supabase
-          .from(table)
-          .insert(params.data);
+        req = req.insert(op.data);
         break;
+
       case 'update':
-        result = await supabase
-          .from(table)
-          .update(params.data)
-          .match(params.match);
+        req = req.update(op.data).match(op.match || {});
         break;
+
       case 'delete':
-        result = await supabase
-          .from(table)
-          .delete()
-          .match(params.match);
+        req = req.delete().match(op.match || {});
         break;
+
       default:
-        throw new Error(`Unknown operation type: ${operation.type}`);
+        throw new Error(`Unknown operation type: ${type}`);
     }
-    
-    const duration = Date.now() - start;
-    console.log('📊 Executed query', { table, operation: operation.type, duration, rows: result.data?.length || 0 });
-    
-    if (result.error) {
-      throw result.error;
-    }
-    
-    return result;
+
+    const { data, error } = await req;
+
+    const ms = Date.now() - start;
+    console.log('📊 query', { table, type, ms, rows: Array.isArray(data) ? data.length : 0 });
+
+    if (error) throw error;
+    return { data, error: null };
   } catch (error) {
-    console.error('❌ Query error:', error);
+    console.error('❌ query error:', error.message);
     throw error;
   }
-};
+}
 
-// Get Supabase client
-const getClient = () => {
-  return supabase;
-};
+const getClient = () => supabase;
 
 module.exports = {
   connectDB,
   query,
   getClient,
-  supabase
+  supabase,
 };
