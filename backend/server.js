@@ -85,6 +85,7 @@ app.use('*', (_req, res) => {
 });
 
 /* -------------------- Start Server (then optional DB ping) -------------------- */
+// Start server (then optional DB ping)
 const startServer = async () => {
   try {
     app.listen(PORT, () => {
@@ -93,13 +94,11 @@ const startServer = async () => {
       console.log(`🔗 API Base URL: http://localhost:${PORT}/api`);
     });
 
-    // Optional: non-blocking Supabase connectivity check
-    try {
-      await connectDB();
-    } catch (error) {
-      console.log('⚠️  Database connection attempt failed:', error.message);
-      console.log('✅ Server continues running without database connection');
-    }
+    // Non-blocking DB connectivity check; never crashes the app
+    connectDB().catch(err => {
+      console.log('⚠️  DB check failed:', err?.message || err);
+      console.log('✅ Server continues running without DB');
+    });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
     process.exit(1);
