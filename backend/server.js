@@ -12,6 +12,8 @@ const blogRoutes = require('./routes/blog');
 
 // Supabase-based DB helpers (no localhost:5432)
 const { connectDB } = require('./config/database');
+// NEW: use the flag exposed by supabase.js
+const { hasServiceKey } = require('./config/supabase');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -65,9 +67,8 @@ app.get('/health', (_req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    supabase_configured: Boolean(
-      process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
-    ),
+    // use the safe flag from supabase.js
+    supabase_configured: hasServiceKey,
     message: 'Backend API is running',
   });
 });
