@@ -51,55 +51,6 @@ const Projects: React.FC = () => {
       </section>
     );
   }
-    {
-      title: 'Sales Forecasting Model',
-      description: 'Advanced time series analysis and machine learning model to predict sales trends with 95% accuracy.',
-      image: '/placeholder.svg',
-      tags: ['Python', 'LSTM', 'Time Series', 'TensorFlow'],
-      category: 'Machine Learning',
-      results: '35% improvement in inventory planning'
-    },
-    {
-      title: 'Customer Segmentation Analysis',
-      description: 'Comprehensive customer behavior analysis using clustering algorithms to identify key market segments.',
-      image: '/placeholder.svg',
-      tags: ['R', 'K-Means', 'PCA', 'Visualization'],
-      category: 'Data Analytics',
-      results: '25% increase in marketing ROI'
-    },
-    {
-      title: 'Real-time Fraud Detection',
-      description: 'ML-powered fraud detection system processing millions of transactions with real-time alerts.',
-      image: '/placeholder.svg',
-      tags: ['Python', 'Anomaly Detection', 'Kafka', 'AWS'],
-      category: 'Machine Learning',
-      results: '99.7% fraud detection accuracy'
-    },
-    {
-      title: 'Supply Chain Optimization',
-      description: 'Data-driven optimization of supply chain operations reducing costs and improving efficiency.',
-      image: '/placeholder.svg',
-      tags: ['Operations Research', 'Optimization', 'Python', 'Tableau'],
-      category: 'Analytics',
-      results: '20% cost reduction achieved'
-    },
-    {
-      title: 'Sentiment Analysis Dashboard',
-      description: 'NLP-powered social media sentiment analysis with interactive dashboards for brand monitoring.',
-      image: '/placeholder.svg',
-      tags: ['NLP', 'BERT', 'React', 'D3.js'],
-      category: 'NLP',
-      results: 'Real-time brand monitoring'
-    },
-    {
-      title: 'Predictive Maintenance System',
-      description: 'IoT sensor data analysis to predict equipment failures and optimize maintenance schedules.',
-      image: '/placeholder.svg',
-      tags: ['IoT', 'Time Series', 'Random Forest', 'Azure'],
-      category: 'Predictive Analytics',
-      results: '40% reduction in downtime'
-    }
-  ];
 
   return (
     <section className="py-20 bg-white">
@@ -150,33 +101,30 @@ const Projects: React.FC = () => {
                     📈 {project.results}
                   </div>
                 </div>
+                
                 <div className="flex gap-2">
+                  {project.demoUrl && (
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="h-4 w-4 mr-1" />
+                        Demo
+                      </a>
+                    </Button>
+                  )}
                   {project.codeUrl && (
-                    <Button size="sm" variant="outline" className="flex-1" asChild>
+                    <Button size="sm" variant="outline" asChild>
                       <a href={project.codeUrl} target="_blank" rel="noopener noreferrer">
-                        <Github className="h-4 w-4 mr-2" />
+                        <Github className="h-4 w-4 mr-1" />
                         Code
                       </a>
                     </Button>
                   )}
-                  {project.type === 'powerbi' && project.powerBiUrl ? (
-                    <Button size="sm" className="flex-1" asChild>
+                  {project.powerBiUrl && (
+                    <Button size="sm" variant="outline" asChild>
                       <a href={project.powerBiUrl} target="_blank" rel="noopener noreferrer">
-                        <BarChart3 className="h-4 w-4 mr-2" />
+                        <BarChart3 className="h-4 w-4 mr-1" />
                         Power BI
                       </a>
-                    </Button>
-                  ) : project.demoUrl ? (
-                    <Button size="sm" className="flex-1" asChild>
-                      <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Demo
-                      </a>
-                    </Button>
-                  ) : (
-                    <Button size="sm" className="flex-1" disabled>
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Demo
                     </Button>
                   )}
                 </div>
