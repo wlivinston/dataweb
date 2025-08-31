@@ -20,9 +20,8 @@ export async function loadProjects(): Promise<ProjectData[]> {
   console.log("LOADING PROJECTS FROM BACKEND...");
   
   try {
-    // Use the deployed backend URL
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://clownfish-app-3hmi3.ondigitalocean.app';
-    const response = await fetch(`${backendUrl}/api/projects`);
+    // Use relative URL for backend API
+    const response = await fetch('/api/projects');
     
     if (!response.ok) {
       console.error('Failed to fetch projects from backend:', response.status, response.statusText);
