@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ExternalLink, Github, BarChart3 } from 'lucide-react';
 import { loadProjects, ProjectData } from '@/lib/loadProjects';
 
+// Projects component - displays dynamic project data
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<ProjectData[]>([]);
   const [loading, setLoading] = useState(true);
