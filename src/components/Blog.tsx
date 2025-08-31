@@ -18,15 +18,82 @@ function calculateReadTime(text: string, wpm = 200): string {
 
 const Blog: React.FC = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log("🟢 Blog.tsx useEffect running");
-    (async () => {
-      const data = await loadPosts();
-      console.log("🟢 Blog.tsx got posts:", data);
-      setPosts(data);
-    })();
-  }, []);
+    // Use static posts directly to avoid API issues
+    const staticPosts = [
+          {
+            title: "Building Scalable Data Pipelines",
+            excerpt: "Learn how to design and implement robust data pipelines that can handle large-scale data processing with Apache Airflow and modern cloud technologies.",
+            date: "2024-01-15",
+            readTime: "8 min read",
+            category: "Data Engineering",
+            featured: true,
+            slug: "building-scalable-data-pipelines",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Data Analytics and Visual Storytelling",
+            excerpt: "Transform raw data into compelling visual narratives that drive business decisions using advanced visualization techniques.",
+            date: "2024-01-10",
+            readTime: "6 min read",
+            category: "Data Visualization",
+            featured: true,
+            slug: "data-analytics-visual-storytelling",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Machine Learning in Production",
+            excerpt: "Best practices for deploying and maintaining machine learning models in production environments.",
+            date: "2024-01-08",
+            readTime: "10 min read",
+            category: "Machine Learning",
+            featured: false,
+            slug: "machine-learning-in-production",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Real-time Analytics with Apache Kafka",
+            excerpt: "Build real-time data processing systems using Apache Kafka and stream processing technologies.",
+            date: "2024-01-05",
+            readTime: "12 min read",
+            category: "Real-time Analytics",
+            featured: false,
+            slug: "real-time-analytics-with-kafka",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Statistical Analysis for Beginners",
+            excerpt: "A comprehensive guide to statistical analysis techniques for data science beginners.",
+            date: "2024-01-03",
+            readTime: "15 min read",
+            category: "Statistics",
+            featured: false,
+            slug: "statistical-analysis-for-beginners",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "The Future of Machine Learning",
+            excerpt: "Exploring emerging trends and technologies that will shape the future of machine learning.",
+            date: "2024-01-01",
+            readTime: "7 min read",
+            category: "Machine Learning",
+            featured: false,
+            slug: "the-future-of-machine-learning",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          }
+        ];
+        setPosts(staticPosts);
+        setLoading(false);
+      }, []);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -48,8 +115,14 @@ const Blog: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post, index) => {
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading blog posts...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post, index) => {
             // Use manual readTime if provided, else calculate automatically
             const readTime = post.readTime?.trim()
               ? post.readTime
@@ -103,8 +176,9 @@ const Blog: React.FC = () => {
                 </CardContent>
               </Card>
             );
-          })}
-        </div>
+                      })}
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <Button size="lg" variant="outline">

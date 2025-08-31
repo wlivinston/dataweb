@@ -18,11 +18,12 @@ services:
       - key: VITE_SUPABASE_ANON_KEY
         type: SECRET
         scope: RUN_AND_BUILD_TIME
+      - key: VITE_BACKEND_URL
+        value: https://clownfish-app-3hmi3.ondigitalocean.app
+        scope: RUN_AND_BUILD_TIME
       - key: NODE_ENV
         value: production
         scope: RUN_AND_BUILD_TIME
-    routes:
-      - path: /
     health_check:
       http_path: /
 
@@ -48,8 +49,6 @@ services:
         value: https://www.dataafrik.com
       - key: NODE_ENV
         value: production
-    routes:
-      - path: /api
     health_check:
       http_path: /health
 
@@ -59,7 +58,7 @@ services:
       repo: wlivinston/dataweb
       branch: master
     build_command: pip install -r requirements.txt
-    # path is /ml, so set baseUrlPath for asset URLs
+    # Run Streamlit directly without health check for now
     run_command: streamlit run main.py --server.port $PORT --server.address 0.0.0.0 --server.baseUrlPath ml
     environment_slug: python
     instance_count: 1
@@ -71,11 +70,11 @@ services:
       - key: SUPABASE_ANON_KEY
         type: SECRET
         scope: RUN_AND_BUILD_TIME
-    routes:
-      - path: /ml
-    # health hits the service root, not /ml
+      - key: HEALTH_CHECK
+        value: "true"
+        scope: RUN_AND_BUILD_TIME
     health_check:
-      http_path: /
+      http_path: /health
 
 domains:
   - domain: dataafrik.com

@@ -6,6 +6,34 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import requests
 import json
+import os
+
+# Add a simple health check endpoint for DigitalOcean
+if os.environ.get('HEALTH_CHECK') == 'true':
+    import http.server
+    import socketserver
+    import threading
+    
+    class HealthCheckHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self):
+            if self.path == '/health':
+                self.send_response(200)
+                self.send_header('Content-type', 'text/plain')
+                self.end_headers()
+                self.wfile.write(b'OK')
+            else:
+                self.send_response(404)
+                self.end_headers()
+    
+    def run_health_server():
+        PORT = int(os.environ.get('HEALTH_CHECK_PORT', 8081))
+        with socketserver.TCPServer(("", PORT), HealthCheckHandler) as httpd:
+            print(f"Health check server running on port {PORT}")
+            httpd.serve_forever()
+    
+    # Start health check server in a separate thread
+    health_thread = threading.Thread(target=run_health_server, daemon=True)
+    health_thread.start()
 
 # Page configuration
 st.set_page_config(
