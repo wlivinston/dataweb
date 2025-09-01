@@ -13,6 +13,10 @@ const STATIC_BLOG_POSTS: Record<string, PostData> = {
     title: "Data Analytics & Visual Storytelling",
     date: "2024-01-15",
     readTime: "5 min read",
+    author: "DataWeb Team",
+    qualification: "Senior Data Scientist",
+    category: "Data Visualization",
+    excerpt: "Transform raw data into compelling visual narratives that drive business decisions using advanced visualization techniques.",
     content: `
 # Data Analytics & Visual Storytelling
 
@@ -126,6 +130,10 @@ Remember: The goal is not to show all the data, but to tell the story that matte
     title: "Building Scalable Data Pipelines",
     date: "2024-01-10",
     readTime: "7 min read",
+    author: "DataWeb Team",
+    qualification: "Data Engineering Lead",
+    category: "Data Engineering",
+    excerpt: "Learn how to design and implement robust data pipelines that can handle large-scale data processing with Apache Airflow and modern cloud technologies.",
     content: `
 # Building Scalable Data Pipelines
 
@@ -327,11 +335,41 @@ const BlogPost: React.FC = () => {
       </div>
       {/* Title */}
       <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-      <div className="mb-6 text-gray-600">
-        {post.date} &middot; {post.readTime}
+      
+      {/* Author and Meta Information */}
+      <div className="mb-6">
+        <div className="flex items-center gap-4 text-gray-600 mb-3">
+          <span>{post.date}</span>
+          <span>•</span>
+          <span>{post.readTime}</span>
+          {post.category && (
+            <>
+              <span>•</span>
+              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                {post.category}
+              </span>
+            </>
+          )}
+        </div>
+        
+        {/* Author Information */}
+        {post.author && (
+          <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+              {post.author.charAt(0)}
+            </div>
+            <div>
+              <div className="font-medium text-gray-900">{post.author}</div>
+              {post.qualification && (
+                <div className="text-sm text-gray-600">{post.qualification}</div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+      
       {/* Markdown Render with custom styling */}
-      <div className="markdown-preview">
+      <div className="markdown-preview prose prose-lg max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
           {post.content}
         </ReactMarkdown>
