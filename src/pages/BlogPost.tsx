@@ -10,7 +10,7 @@ const BlogPost: React.FC = () => {
   const [post, setPost] = useState<PostData | null>(null);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/api/blog/posts/${slug}`)
+    fetch(`/api/blog/posts/${slug}`)
       .then(res => res.json())
       .then((data: { post: PostData }) => {
         setPost(data.post || null);
