@@ -1,8 +1,8 @@
 import React from 'react';
-import Projects from '@/components/Projects';
+import DataUpload from '@/components/DataUpload';
 
 const ProjectsPage: React.FC = () => {
-	return <Projects />;
+  return <DataUpload />;
 };
 
 export default ProjectsPage;

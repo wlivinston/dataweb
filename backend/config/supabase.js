@@ -1,29 +1,28 @@
 // backend/config/supabase.js
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;                 // e.g. https://wjeqwwilkbpqwuffiuio.supabase.co
-const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // backend ONLY
-const anonKey = process.env.SUPABASE_ANON_KEY || null;        // optional (backend usually doesn't need it)
+const supabaseUrl  = (process.env.SUPABASE_URL || '').trim();
+const serviceKey   = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+const anonKey      = (process.env.SUPABASE_ANON_KEY || '').trim();
 
-if (!supabaseUrl || !serviceRoleKey) {
-  console.warn('⚠️  SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. DB calls may fail.');
+const hasServiceKey = Boolean(supabaseUrl && serviceKey);
+const hasAnonKey    = Boolean(supabaseUrl && anonKey);
+
+let supabase = null;
+let supabaseAnon = null;
+
+if (hasServiceKey) {
+  supabase = createClient(supabaseUrl, serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+} else {
+  console.warn('⚠️  SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing. DB calls will be skipped.');
 }
 
-const supabase = (supabaseUrl && serviceRoleKey)
-  ? createClient(supabaseUrl, serviceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    })
-  : null;
+if (hasAnonKey) {
+  supabaseAnon = createClient(supabaseUrl, anonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
 
-// Optional anon client (only if you have a use-case server-side)
-const supabaseAnon = (supabaseUrl && anonKey)
-  ? createClient(supabaseUrl, anonKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-    })
-  : null;
-
-module.exports = {
-  supabase,
-  supabaseAnon,
-  supabaseUrl,
-};
+module.exports = { supabase, supabaseAnon, hasServiceKey, hasAnonKey };

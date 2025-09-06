@@ -1,25 +1,30 @@
 // backend/config/database.js
-const { supabase } = require('./supabase');
+const { supabase, hasServiceKey } = require('./supabase');
 
-// Optional connectivity check; NEVER throws to the caller.
+// Optional connectivity check; NEVER throws.
 async function connectDB() {
+  if (!hasServiceKey || !supabase) {
+    console.warn('⚠️  Skipping Supabase ping: env not configured.');
+    return;
+  }
   try {
-    console.log('🔗 Testing Supabase connection…');
     const { data, error } = await supabase.from('blog_posts').select('id').limit(1);
     if (error) {
-      console.warn('⚠️ Supabase ping failed:', error.message);
-      console.warn("ℹ️ That's OK if the table doesn't exist yet. Server will keep running.");
+      console.warn('⚠️  Supabase ping failed:', error.message);
       return;
     }
-    console.log('✅ Supabase connection OK — rows visible:', data?.length ?? 0);
+    console.log(`✅ Supabase connection OK — rows visible: ${data?.length || 0}`);
   } catch (err) {
-    console.warn('⚠️ Supabase ping threw:', err.message);
-    console.warn('ℹ️ Server continues without DB.');
+    console.warn('⚠️  Supabase ping threw:', err.message);
   }
 }
 
-// Tiny CRUD helper (no pg, no localhost)
+// Tiny CRUD helper that refuses to run if Supabase isn't configured
 async function query(table, op = {}) {
+  if (!hasServiceKey || !supabase) {
+    throw new Error('Supabase client not configured (missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY).');
+  }
+
   const start = Date.now();
   let req = supabase.from(table);
 
@@ -29,9 +34,9 @@ async function query(table, op = {}) {
         req = req.select(op.select || '*');
         if (op.match) req = req.match(op.match);
         if (op.order) {
-          const column = typeof op.order === 'string' ? op.order : op.order.column;
-          const ascending = typeof op.order === 'object' ? !!op.order.ascending : false;
-          req = req.order(column, { ascending });
+          const col = typeof op.order === 'string' ? op.order : op.order.column;
+          const asc = typeof op.order === 'object' ? !!op.order.ascending : false;
+          req = req.order(col, { ascending: asc });
         }
         if (op.range) req = req.range(op.range.from ?? 0, op.range.to ?? 999);
         break;
@@ -53,6 +58,4 @@ async function query(table, op = {}) {
   }
 }
 
-const getClient = () => supabase;
-
-module.exports = { connectDB, query, getClient, supabase };
+module.exports = { connectDB, query };

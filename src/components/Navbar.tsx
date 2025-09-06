@@ -18,9 +18,8 @@ const Navbar: React.FC<NavbarProps> = ({
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
-    { id: 'projects', label: 'Projects' },
+    { id: 'projects', label: 'Data Analysis' },
     { id: 'blog', label: 'Blog', href: '/blog' },
-    { id: 'ml-hub', label: 'ML Hub', href: '/ml' },
     { id: 'about', label: 'Who We Are' }
   ];
 
