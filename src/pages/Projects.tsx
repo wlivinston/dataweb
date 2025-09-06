@@ -1,8 +1,8 @@
 import React from 'react';
-import DataUpload from '@/components/DataUpload';
+import AdvancedDataUpload from '@/components/AdvancedDataUpload';
 
 const ProjectsPage: React.FC = () => {
-  return <DataUpload />;
+  return <AdvancedDataUpload />;
 };
 
 export default ProjectsPage;
