@@ -1,5 +1,5 @@
 import React from 'react';
-import AdvancedDataUpload from '@/components/AdvancedDataUpload';
+import FunctionalDataUpload from '@/components/FunctionalDataUpload';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -13,7 +13,7 @@ const ProjectsPage: React.FC = () => {
         setMobileMenuOpen={() => {}}
       />
       <main className="pt-16">
-        <AdvancedDataUpload />
+        <FunctionalDataUpload />
       </main>
       <Footer />
     </div>
