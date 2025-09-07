@@ -10,9 +10,10 @@ import {
   Upload, FileText, BarChart3, TrendingUp, Users, DollarSign, 
   CheckCircle, Plus, Link, Palette, Zap, Database, 
   PieChart, LineChart, ChartScatter, AreaChart, Table, Gauge,
-  AlertCircle, Loader2
+  AlertCircle, Loader2, FileSpreadsheet, FileCode
 } from 'lucide-react';
 import { toast } from 'sonner';
+import * as XLSX from 'xlsx';
 
 interface Dataset {
   id: string;
@@ -84,6 +85,14 @@ const FunctionalDataUpload: React.FC = () => {
     { name: 'monochrome', colors: ['#374151', '#6B7280', '#9CA3AF', '#D1D5DB'] }
   ];
 
+  // File Format Detection
+  const getFileFormat = (fileName: string): 'csv' | 'excel' | 'json' => {
+    const extension = fileName.toLowerCase().split('.').pop();
+    if (['xlsx', 'xls'].includes(extension || '')) return 'excel';
+    if (extension === 'json') return 'json';
+    return 'csv';
+  };
+
   // CSV Parser Function
   const parseCSV = (csvText: string): any[] => {
     const lines = csvText.split('\n').filter(line => line.trim());
@@ -104,6 +113,73 @@ const FunctionalDataUpload: React.FC = () => {
     }
     
     return data;
+  };
+
+  // Excel Parser Function
+  const parseExcel = (file: File): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          
+          // Get the first worksheet
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          
+          // Convert to JSON
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          if (jsonData.length === 0) {
+            resolve([]);
+            return;
+          }
+          
+          // Convert to object format
+          const headers = jsonData[0] as string[];
+          const rows = jsonData.slice(1) as any[][];
+          
+          const result = rows.map(row => {
+            const obj: any = {};
+            headers.forEach((header, index) => {
+              obj[header] = row[index] || '';
+            });
+            return obj;
+          });
+          
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read Excel file'));
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  // JSON Parser Function
+  const parseJSON = (jsonText: string): any[] => {
+    try {
+      const parsed = JSON.parse(jsonText);
+      
+      // Handle different JSON structures
+      if (Array.isArray(parsed)) {
+        return parsed;
+      } else if (typeof parsed === 'object' && parsed !== null) {
+        // If it's an object, try to find an array property
+        const arrayKeys = Object.keys(parsed).filter(key => Array.isArray(parsed[key]));
+        if (arrayKeys.length > 0) {
+          return parsed[arrayKeys[0]];
+        }
+        // If no array found, wrap the object in an array
+        return [parsed];
+      }
+      
+      return [];
+    } catch (error) {
+      throw new Error('Invalid JSON format');
+    }
   };
 
   // Detect Data Type
@@ -159,17 +235,29 @@ const FunctionalDataUpload: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!file.name.toLowerCase().endsWith('.csv')) {
-      toast.error('Please upload a CSV file');
+    const fileFormat = getFileFormat(file.name);
+    const supportedFormats = ['csv', 'xlsx', 'xls', 'json'];
+    
+    if (!supportedFormats.includes(file.name.toLowerCase().split('.').pop() || '')) {
+      toast.error('Please upload a CSV, Excel (.xlsx, .xls), or JSON file');
       return;
     }
 
     try {
-      const text = await file.text();
-      const data = parseCSV(text);
+      let data: any[] = [];
+
+      if (fileFormat === 'csv') {
+        const text = await file.text();
+        data = parseCSV(text);
+      } else if (fileFormat === 'excel') {
+        data = await parseExcel(file);
+      } else if (fileFormat === 'json') {
+        const text = await file.text();
+        data = parseJSON(text);
+      }
       
       if (data.length === 0) {
-        toast.error('CSV file is empty or invalid');
+        toast.error(`${fileFormat.toUpperCase()} file is empty or invalid`);
         return;
       }
 
@@ -192,10 +280,10 @@ const FunctionalDataUpload: React.FC = () => {
       
       setDatasets(prev => [...prev, newDataset]);
       setActiveDataset(newDataset.id);
-      toast.success(`Successfully uploaded ${file.name} with ${data.length} rows`);
+      toast.success(`Successfully uploaded ${file.name} (${fileFormat.toUpperCase()}) with ${data.length} rows`);
     } catch (error) {
-      console.error('Error parsing CSV:', error);
-      toast.error('Error parsing CSV file');
+      console.error(`Error parsing ${fileFormat}:`, error);
+      toast.error(`Error parsing ${fileFormat.toUpperCase()} file: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -496,7 +584,7 @@ const FunctionalDataUpload: React.FC = () => {
             Advanced Data Analysis Platform
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Upload your CSV datasets and get instant AI-powered insights with dynamic visualizations and DAX calculations
+            Upload your CSV, Excel, or JSON datasets and get instant AI-powered insights with dynamic visualizations and DAX calculations
           </p>
         </div>
 
@@ -520,7 +608,7 @@ const FunctionalDataUpload: React.FC = () => {
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                   <input
                     type="file"
-                    accept=".csv"
+                    accept=".csv,.xlsx,.xls,.json"
                     onChange={handleFileUpload}
                     className="hidden"
                     id="file-upload"
@@ -529,10 +617,18 @@ const FunctionalDataUpload: React.FC = () => {
                     htmlFor="file-upload"
                     className="cursor-pointer flex flex-col items-center gap-4"
                   >
-                    <Upload className="h-12 w-12 text-gray-400" />
+                    <div className="flex items-center gap-2">
+                      <Upload className="h-12 w-12 text-gray-400" />
+                      <div className="flex gap-1">
+                        <FileText className="h-6 w-6 text-blue-500" />
+                        <FileSpreadsheet className="h-6 w-6 text-green-500" />
+                        <FileCode className="h-6 w-6 text-purple-500" />
+                      </div>
+                    </div>
                     <div>
-                      <p className="text-lg font-medium text-gray-900">Upload CSV Files</p>
-                      <p className="text-sm text-gray-500">Click to browse or drag and drop</p>
+                      <p className="text-lg font-medium text-gray-900">Upload Data Files</p>
+                      <p className="text-sm text-gray-500">CSV, Excel (.xlsx, .xls), or JSON files</p>
+                      <p className="text-xs text-gray-400 mt-1">Click to browse or drag and drop</p>
                     </div>
                   </label>
                 </div>
@@ -540,21 +636,35 @@ const FunctionalDataUpload: React.FC = () => {
                 {datasets.length > 0 && (
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">Uploaded Datasets</h3>
-                    {datasets.map(dataset => (
-                      <Card key={dataset.id} className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-medium">{dataset.name}</h4>
-                            <p className="text-sm text-gray-500">
-                              {dataset.rowCount} rows • {dataset.columns.length} columns
-                            </p>
+                    {datasets.map(dataset => {
+                      const fileFormat = getFileFormat(dataset.name);
+                      const getFileIcon = () => {
+                        switch (fileFormat) {
+                          case 'excel': return <FileSpreadsheet className="h-4 w-4 text-green-500" />;
+                          case 'json': return <FileCode className="h-4 w-4 text-purple-500" />;
+                          default: return <FileText className="h-4 w-4 text-blue-500" />;
+                        }
+                      };
+                      
+                      return (
+                        <Card key={dataset.id} className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {getFileIcon()}
+                              <div>
+                                <h4 className="font-medium">{dataset.name}</h4>
+                                <p className="text-sm text-gray-500">
+                                  {dataset.rowCount} rows • {dataset.columns.length} columns • {fileFormat.toUpperCase()}
+                                </p>
+                              </div>
+                            </div>
+                            <Badge variant="outline">
+                              {dataset.columns.filter(col => col.type === 'number').length} numeric
+                            </Badge>
                           </div>
-                          <Badge variant="outline">
-                            {dataset.columns.filter(col => col.type === 'number').length} numeric
-                          </Badge>
-                        </div>
-                      </Card>
-                    ))}
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
 
