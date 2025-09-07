@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Upload, FileText, BarChart3, TrendingUp, Users, DollarSign, 
   CheckCircle, Plus, Link, Palette, Zap, Database, 
-  PieChart, LineChart, Scatter, AreaChart, Table, Gauge
+  PieChart, LineChart, ScatterChart, AreaChart, Table, Gauge
 } from 'lucide-react';
 
 interface Dataset {
@@ -404,7 +404,7 @@ const AdvancedDataUpload: React.FC = () => {
       case 'bar': return <BarChart3 className="h-6 w-6" />;
       case 'line': return <LineChart className="h-6 w-6" />;
       case 'pie': return <PieChart className="h-6 w-6" />;
-      case 'scatter': return <Scatter className="h-6 w-6" />;
+      case 'scatter': return <ScatterChart className="h-6 w-6" />;
       case 'area': return <AreaChart className="h-6 w-6" />;
       case 'table': return <Table className="h-6 w-6" />;
       case 'gauge': return <Gauge className="h-6 w-6" />;
