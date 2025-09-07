@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BarChart3, Brain, Database } from 'lucide-react';
+import { ArrowRight, BarChart3, Upload, Zap } from 'lucide-react';
 
 interface HeroProps {
   setActiveSection: (section: string) => void;
@@ -29,8 +29,8 @@ const Hero: React.FC<HeroProps> = ({ setActiveSection }) => {
             </span>
           </h1>
           <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto">
-            Expert data analysis and machine learning solutions to drive your business forward. 
-            From predictive analytics to custom AI models, we turn complex data into clear strategies.
+            Upload your datasets and get instant AI-powered insights with our advanced analytics platform. 
+            From multi-dataset relationships to dynamic visualizations, transform your data into actionable strategies.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button 
@@ -46,7 +46,7 @@ const Hero: React.FC<HeroProps> = ({ setActiveSection }) => {
               onClick={() => setActiveSection('projects')}
               className="border-white/30 text-white hover:bg-white/10"
             >
-              View Projects
+              Analyze Your Data
             </Button>
           </div>
         </div>
@@ -55,24 +55,24 @@ const Hero: React.FC<HeroProps> = ({ setActiveSection }) => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
           <div className="text-center p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BarChart3 className="h-8 w-8 text-blue-300" />
+              <Upload className="h-8 w-8 text-blue-300" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-white">Data Analytics</h3>
-            <p className="text-gray-300">Advanced statistical analysis and visualization</p>
+            <h3 className="text-xl font-semibold mb-2 text-white">Multi-Dataset Upload</h3>
+            <p className="text-gray-300">Upload multiple datasets and discover relationships</p>
           </div>
           <div className="text-center p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Brain className="h-8 w-8 text-purple-300" />
+              <Zap className="h-8 w-8 text-purple-300" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-white">Machine Learning</h3>
-            <p className="text-gray-300">Custom AI models and predictive analytics</p>
+            <h3 className="text-xl font-semibold mb-2 text-white">AI-Powered DAX</h3>
+            <p className="text-gray-300">15+ pre-built formulas with confidence scoring</p>
           </div>
           <div className="text-center p-6 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
             <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Database className="h-8 w-8 text-green-300" />
+              <BarChart3 className="h-8 w-8 text-green-300" />
             </div>
-            <h3 className="text-xl font-semibold mb-2 text-white">Data Engineering</h3>
-            <p className="text-gray-300">Scalable data pipelines and infrastructure</p>
+            <h3 className="text-xl font-semibold mb-2 text-white">Dynamic Visualizations</h3>
+            <p className="text-gray-300">Multiple chart types with professional color schemes</p>
           </div>
         </div>
       </div>
