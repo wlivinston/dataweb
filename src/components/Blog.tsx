@@ -89,6 +89,50 @@ const Blog: React.FC = () => {
             slug: "the-future-of-machine-learning",
             content: "Content will be loaded from markdown file...",
             author: "DataWeb Team"
+          },
+          {
+            title: "Data Privacy and Security in Analytics",
+            excerpt: "Best practices for protecting sensitive data while maintaining analytical capabilities in modern data environments.",
+            date: "2023-12-28",
+            readTime: "9 min read",
+            category: "Data Security",
+            featured: false,
+            slug: "data-privacy-security-analytics",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Cloud Data Warehousing Strategies",
+            excerpt: "Comprehensive guide to designing and implementing cloud-based data warehousing solutions for modern businesses.",
+            date: "2023-12-25",
+            readTime: "11 min read",
+            category: "Cloud Computing",
+            featured: false,
+            slug: "cloud-data-warehousing-strategies",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Advanced SQL Techniques for Data Analysis",
+            excerpt: "Master advanced SQL techniques including window functions, CTEs, and complex joins for sophisticated data analysis.",
+            date: "2023-12-22",
+            readTime: "13 min read",
+            category: "SQL",
+            featured: false,
+            slug: "advanced-sql-techniques-data-analysis",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
+          },
+          {
+            title: "Building Real-time Dashboards",
+            excerpt: "Learn how to create dynamic, real-time dashboards that provide instant insights into your business metrics.",
+            date: "2023-12-20",
+            readTime: "8 min read",
+            category: "Dashboard Development",
+            featured: false,
+            slug: "building-real-time-dashboards",
+            content: "Content will be loaded from markdown file...",
+            author: "DataWeb Team"
           }
         ];
         setPosts(staticPosts);

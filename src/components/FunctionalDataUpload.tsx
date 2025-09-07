@@ -9,11 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Upload, FileText, BarChart3, TrendingUp, Users, DollarSign, 
   CheckCircle, Plus, Link, Palette, Zap, Database, 
-  PieChart, LineChart, ChartScatter, AreaChart, Table, Gauge,
+  PieChart as PieChartIcon, LineChart as LineChartIcon, ChartScatter, AreaChart as AreaChartIcon, Table, Gauge,
   AlertCircle, Loader2, FileSpreadsheet, FileCode
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
 
 interface Dataset {
   id: string;
@@ -516,10 +517,10 @@ const FunctionalDataUpload: React.FC = () => {
   const getVisualizationIcon = (type: string) => {
     switch (type) {
       case 'bar': return <BarChart3 className="h-6 w-6" />;
-      case 'line': return <LineChart className="h-6 w-6" />;
-      case 'pie': return <PieChart className="h-6 w-6" />;
+      case 'line': return <LineChartIcon className="h-6 w-6" />;
+      case 'pie': return <PieChartIcon className="h-6 w-6" />;
       case 'scatter': return <ChartScatter className="h-6 w-6" />;
-      case 'area': return <AreaChart className="h-6 w-6" />;
+      case 'area': return <AreaChartIcon className="h-6 w-6" />;
       case 'table': return <Table className="h-6 w-6" />;
       case 'gauge': return <Gauge className="h-6 w-6" />;
       default: return <BarChart3 className="h-6 w-6" />;
@@ -562,15 +563,99 @@ const FunctionalDataUpload: React.FC = () => {
       );
     }
     
-    // For other chart types, show a placeholder with data summary
+    const chartData = Array.isArray(viz.data) ? viz.data : [];
+    
+    if (viz.type === 'bar') {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="category" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="value" fill={viz.colors[0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+    
+    if (viz.type === 'pie') {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ category, percent }) => `${category} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={viz.colors[index % viz.colors.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+    
+    if (viz.type === 'line') {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="category" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="value" stroke={viz.colors[0]} strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+    
+    if (viz.type === 'area') {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="category" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area type="monotone" dataKey="value" stroke={viz.colors[0]} fill={viz.colors[0]} fillOpacity={0.6} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+    
+    // For scatter and gauge charts, show a placeholder for now
     return (
       <div className="p-4 bg-gray-50 rounded-lg">
         <h4 className="font-medium mb-2">{viz.title}</h4>
         <p className="text-sm text-gray-600">
-          {viz.type.toUpperCase()} Chart - {Array.isArray(viz.data) ? viz.data.length : 'N/A'} data points
+          {viz.type.toUpperCase()} Chart - {chartData.length} data points
         </p>
         <div className="mt-2 text-xs text-gray-500">
           Colors: {viz.colors.join(', ')}
+        </div>
+        <div className="mt-4 p-3 bg-white rounded border">
+          <p className="text-sm text-gray-700">
+            Chart preview: {JSON.stringify(chartData.slice(0, 3), null, 2)}
+          </p>
         </div>
       </div>
     );
