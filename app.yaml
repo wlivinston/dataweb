@@ -24,6 +24,12 @@ services:
       - key: NODE_ENV
         value: production
         scope: RUN_AND_BUILD_TIME
+      - key: FORCE_REFRESH
+        value: "true"
+        scope: RUN_AND_BUILD_TIME
+      - key: DEPLOYMENT_TIMESTAMP
+        value: "2025-09-07-16-30"
+        scope: RUN_AND_BUILD_TIME
     health_check:
       http_path: /
 
@@ -49,6 +55,12 @@ services:
         value: https://www.dataafrik.com
       - key: NODE_ENV
         value: production
+      - key: FORCE_REFRESH
+        value: "true"
+        scope: RUN_AND_BUILD_TIME
+      - key: DEPLOYMENT_TIMESTAMP
+        value: "2025-09-07-16-30"
+        scope: RUN_AND_BUILD_TIME
     health_check:
       http_path: /health
 
