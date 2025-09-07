@@ -1,12 +1,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, BarChart3, Upload, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface HeroProps {
   setActiveSection: (section: string) => void;
 }
 
 const Hero: React.FC<HeroProps> = ({ setActiveSection }) => {
+  const navigate = useNavigate();
+  
   return (
     <section 
       className="min-h-screen pt-16 relative overflow-hidden"
@@ -43,7 +46,7 @@ const Hero: React.FC<HeroProps> = ({ setActiveSection }) => {
             <Button 
               size="lg" 
               variant="outline"
-              onClick={() => setActiveSection('projects')}
+              onClick={() => navigate('/projects')}
               className="border-white/30 text-white hover:bg-white/10"
             >
               Analyze Your Data
